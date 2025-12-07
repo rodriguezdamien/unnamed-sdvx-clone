@@ -116,9 +116,9 @@ String Path::Normalize(const String& path)
 	{
 		if(out[i] == '\\')
 			out[i] = sep;
-		if (out[i] == '\0')
-			return out;
+		if (out[i] == '\0') break;
 	}
+    printf("Path::Normalize(path=%s): %s\n", path.c_str(), out);
 	return out;
 }
 bool Path::IsAbsolute(const String& path)

@@ -191,6 +191,7 @@ namespace Graphics
 
 		bool Init(ShaderType type, const String& name)
 		{
+			printf("Shader_Impl::Init(type=%d, name=%s) called\n", (int)type, name.c_str());
 			m_sourcePath = Path::Normalize(name);
 			m_type = type;
 			

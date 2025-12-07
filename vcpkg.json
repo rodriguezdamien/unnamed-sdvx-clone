@@ -9,6 +9,7 @@
         "sdl2",
         "libjpeg-turbo",
         "libvorbis",
+        "cpr",
         {
             "name": "libarchive",
             "default-features": false,

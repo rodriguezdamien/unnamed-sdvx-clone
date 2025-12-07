@@ -12,7 +12,7 @@ size_t Thread::SetAffinityMask(size_t affinityMask)
 		if((affinityMask & m) != 0)
 			CPU_SET(j, &cpuset);
 	}
-	pthread_setaffinity_np(h, sizeof(cpu_set_t), &cpuset);
+	// pthread_setaffinity_np(h, sizeof(cpu_set_t), &cpuset);
 	return 0;
 }
 
@@ -27,6 +27,6 @@ size_t Thread::SetCurrentThreadAffinityMask(size_t affinityMask)
 		if((affinityMask & m) != 0)
 			CPU_SET(j, &cpuset);
 	}
-	pthread_setaffinity_np(h, sizeof(cpu_set_t), &cpuset);
+	// pthread_setaffinity_np(h, sizeof(cpu_set_t), &cpuset);
 	return 0;
 }

@@ -13,7 +13,7 @@
 #include <OpenGL/gl3ext.h>
 #elif EMBEDDED
 #include "GLES3/gl3.h"
-#include "GLES3/gl3ext.h"
+// #include "GLES3/gl3ext.h"
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
 #elif __linux
@@ -21,3 +21,4 @@
 #include <GL/glxew.h>
 #endif
 
+#include <GL/glew.h>

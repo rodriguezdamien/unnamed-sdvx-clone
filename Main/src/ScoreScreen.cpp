@@ -1227,7 +1227,6 @@ public:
 	}
 	void OnRestore() override
 	{
-		g_application->DiscordPresenceMenu("Result Screen");
 		m_restored = true;
 	}
 

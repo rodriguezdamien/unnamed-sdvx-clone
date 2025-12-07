@@ -221,7 +221,6 @@ public:
 	void OnRestore() override
 	{
 		g_gameWindow->SetCursorVisible(true);
-		g_application->DiscordPresenceMenu("Title Screen");
 	}
 
 	virtual void Tick(float deltaTime)

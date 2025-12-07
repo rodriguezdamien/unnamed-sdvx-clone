@@ -1318,7 +1318,6 @@ public:
 
 	void OnRestore() override
 	{
-		g_application->DiscordPresenceMenu("Settings");
 	}
 
 protected:

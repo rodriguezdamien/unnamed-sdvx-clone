@@ -570,8 +570,7 @@ public:
 
 		// TODO: Set more accurate endTime
 		int64 endTime = startTime + (m_playOptions.range.Length(m_endTime) + GetAudioLeadIn()) / 1000;
-		g_application->DiscordPresenceSong(mapSettings, startTime, endTime);
-
+	
 		String jacketPath = m_chartRootPath + "/" + mapSettings.jacketPath;
 		// Set gameplay table
 		SetInitialGameplayLua(m_lua);

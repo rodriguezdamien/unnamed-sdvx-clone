@@ -10,10 +10,12 @@ String Path::gameDir = "";
 String Path::Absolute(const String& path)
 {
 	if(IsAbsolute(path))
-		return path;
+	return path;
 
 	String baseDir = !gameDir.empty() ? gameDir : RemoveLast(GetExecutablePath());
-	return baseDir + sep + path;
+	String ret = baseDir + sep + path;
+	printf("Absolute(path=%s): %s\n", path.c_str(), ret.c_str());
+	return ret;
 }
 String Path::RemoveLast(const String& path, String* lastOut /*= nullptr*/)
 {

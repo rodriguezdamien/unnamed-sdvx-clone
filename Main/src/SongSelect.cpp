@@ -1809,7 +1809,6 @@ public:
 	}
 	void OnRestore() override
 	{
-		g_application->DiscordPresenceMenu("Song Select");
 		m_suspended = false;
 		m_hasRestored = true;
 		m_transitionedToGame = false;

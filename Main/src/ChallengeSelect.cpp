@@ -1246,7 +1246,6 @@ public:
 	void OnRestore() override
 	{
 		// NOTE: we can't trigger the next chart here bc you can't add tickables on restore
-		g_application->DiscordPresenceMenu("Challenge Select");
 		m_suspended = false;
 		m_hasRestored = true;
 		m_transitionedToGame = false;

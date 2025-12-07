@@ -3,6 +3,8 @@
 #include "Log.hpp"
 #include "Buffer.hpp"
 
+#include <emscripten.h>
+
 /*
 	Unix implementation
 */
@@ -39,12 +41,21 @@ File::~File()
 }
 bool File::OpenRead(const String& path)
 {
+	if (path.length() == 0)
+	{
+		char buffer[1024];
+		int n = emscripten_get_callstack(EM_LOG_C_STACK | EM_LOG_DEMANGLE, buffer, sizeof(buffer));
+		printf("Stack (%d bytes):\n%s\n", n, buffer);
+	}
+
+
+	printf("OpenRead(path=%s) called\n", path.c_str());
 	Close();
 
 	int handle = open(*path, O_RDONLY);
 	if(handle == -1)
 	{
-		Logf("Failed to open file for reading %s: %d", Logger::Severity::Warning, *path, errno);
+		Logf("Failed to open file for reading '%s': '%d'", Logger::Severity::Warning, *path, errno);
 		return false;
 	}
 

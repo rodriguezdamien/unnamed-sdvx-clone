@@ -95,9 +95,16 @@ target_link_libraries(usc-game GUI)
 target_link_libraries(usc-game Beatmap)
 target_link_libraries(usc-game nanovg)
 target_link_libraries(usc-game lua)
-target_link_libraries(usc-game discord-rpc)
 target_link_libraries(usc-game cpr)
 target_link_libraries(usc-game nlohmann_json)
+
+target_link_directories(usc-game PUBLIC /vcpkg/packages/cpr_wasm32-emscripten/lib/)
+target_link_directories(usc-game PUBLIC /vcpkg/packages/curl_wasm32-emscripten/lib/)
+target_link_directories(usc-game PUBLIC /vcpkg/packages/openssl_wasm32-emscripten/lib)
+target_link_libraries(usc-game curl)
+target_link_libraries(usc-game crypto)
+target_link_libraries(usc-game ssl)
+# target_link_libraries(usc-game OpenSSL::Crypto)
 
 target_link_libraries(usc-game ${SDL2_LIBRARY})
 target_link_libraries(usc-game ${LibArchive_LIBRARIES})
@@ -123,3 +130,22 @@ if(ZLIB_FOUND)
 endif()
 
 target_link_libraries(usc-game cc-common)
+
+# target_link_options(usc-game PUBLIC -sUSE_SDL=2)
+target_link_options(usc-game PUBLIC -sMAX_WEBGL_VERSION=2)
+# target_link_options(usc-game PUBLIC -sLEGACY_GL_EMULATION)
+# target_link_options(usc-game PUBLIC -sFULL_ES2)
+target_link_options(usc-game PUBLIC -sFULL_ES3)
+
+target_link_options(usc-game PUBLIC -sMIN_WEBGL_VERSION=2)
+target_link_options(usc-game PUBLIC -sMAX_WEBGL_VERSION=2)
+
+# Try with old opengl
+target_compile_definitions(usc-game PUBLIC EMBEDDED=1)
+target_include_directories(usc-game PUBLIC /emsdk/upstream/emscripten/cache/sysroot/include)
+
+target_link_options(usc-game PUBLIC -sPTHREAD_POOL_SIZE=20)
+target_link_options(usc-game PUBLIC -sASSERTIONS=1)
+target_link_options(usc-game PUBLIC -sUSE_PTHREADS=1)
+target_link_options(usc-game PUBLIC -sEXPORTED_RUNTIME_METHODS=['wasmMemory'])
+target_link_options(usc-game PUBLIC -sABORT_ON_WASM_EXCEPTIONS=1)

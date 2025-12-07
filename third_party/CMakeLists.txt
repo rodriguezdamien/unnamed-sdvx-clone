@@ -15,12 +15,6 @@ else()
     target_include_directories(cpr PUBLIC ${CPR_INCLUDE_DIRS})
 endif(USE_SYSTEM_CPR)
 
-#discord example program
-set(CLANG_FORMAT_SUFFIX "ignore") #try to disable clang formatter
-option(BUILD_EXAMPLES "Build example apps" OFF)
-add_subdirectory(discord-rpc)
-target_include_directories(discord-rpc PUBLIC discord-rpc/include)
-
 #nanovg
 add_library(nanovg nanovg/src/nanovg.c)
 target_include_directories(nanovg PUBLIC nanovg/src)
@@ -90,17 +84,6 @@ add_library(soundtouch
 )
 target_include_directories(soundtouch PUBLIC soundtouch/include)
 target_include_directories(soundtouch PRIVATE soundtouch/src)
-
-#GLEW
-add_library(GLEW
-    glew/include/GL/glew.h
-    glew/include/GL/glxew.h
-    glew/include/GL/wglew.h
-    glew/src/glew.c
-)
-# GLEW is included statically and also doesn't need GLU(Which doesn't even exist on linux)
-target_compile_definitions(GLEW PUBLIC -DGLEW_NO_GLU -DGLEW_STATIC)
-target_include_directories(GLEW PUBLIC glew/include)
 
 # Enable multiprocess compiling
 if(MSVC)

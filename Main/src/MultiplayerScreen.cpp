@@ -221,8 +221,7 @@ bool MultiplayerScreen::m_handleBadPassword(nlohmann::json& packet)
 
 bool MultiplayerScreen::m_handleRoomList(nlohmann::json& packet)
 {
-	g_application->DiscordPresenceMenu("Browsing multiplayer rooms");
-
+	
 	if (m_screenState != MultiplayerScreenState::ROOM_LIST) {
 		m_screenState = MultiplayerScreenState::ROOM_LIST;
 		lua_pushstring(m_lua, "roomList");
@@ -248,8 +247,7 @@ bool MultiplayerScreen::m_handleJoinRoom(nlohmann::json& packet)
 	lua_setglobal(m_lua, "screenState");
 	packet["room"]["id"].get_to(m_roomId);
 	packet["room"]["join_token"].get_to(m_joinToken);
-	g_application->DiscordPresenceMulti(m_joinToken, 1, 8, "test");
-
+	
 	String roomname;
 	packet["room"]["name"].get_to(roomname);
 	m_chatOverlay->AddMessage("You joined "+roomname, 207, 178, 41);
@@ -280,7 +278,6 @@ bool MultiplayerScreen::m_handleAuthResponse(nlohmann::json& packet)
 		return false;
 	}
 
-	g_application->DiscordPresenceMenu("Browsing multiplayer rooms");
 	packet["userid"].get_to(m_userId);
 	m_scoreInterval = packet.value("refresh_rate",1000);
 
@@ -294,7 +291,6 @@ bool MultiplayerScreen::m_handleRoomUpdate(nlohmann::json& packet)
 {
 	int userCount = packet.at("users").size();
 	m_joinToken = packet.value("join_token", "");
-	g_application->DiscordPresenceMulti(m_joinToken, userCount, 8, "test");
 	m_handleSongChange(packet);
 
 	return true;
@@ -799,7 +795,6 @@ bool MultiplayerScreen::m_returnToMainList()
 	m_stopPreview();
 	lua_pushstring(m_lua, "roomList");
 	lua_setglobal(m_lua, "screenState");
-	g_application->DiscordPresenceMulti("", 0, 0, "");
 	m_roomId = "";
 	m_hasSelectedMap = false;
 	m_selectedMapId = 0;

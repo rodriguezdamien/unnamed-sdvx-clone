@@ -58,7 +58,6 @@ using namespace Graphics;
 
 #include "archive.h"
 #include "archive_entry.h"
-#include "discord_rpc.h"
 #include "json.hpp"
 #include "lua.hpp"
 #include "nanovg.h"

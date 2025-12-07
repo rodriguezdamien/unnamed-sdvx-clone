@@ -522,8 +522,11 @@ bool Application::m_LoadConfig(String profileName /* must be by value */)
 	bool successful = false;
 
 	String configPath = "Main.cfg";
+	printf("configPath=%s\n", configPath.c_str());
 	File mainConfigFile;
-	if (mainConfigFile.OpenRead(Path::Absolute(configPath)))
+	String tmp = Path::Absolute(configPath);
+	printf("tmp=%s\n", tmp.c_str());
+	if (mainConfigFile.OpenRead(tmp))
 	{
 		FileReader reader(mainConfigFile);
 		successful = g_gameConfig.Load(reader);
@@ -658,34 +661,6 @@ void Application::m_SaveConfig()
 		tmp_gc.Save(writer, nullptr, &toSave);
 		configFile.Close();
 	}
-}
-
-void __discordError(int errorCode, const char *message)
-{
-	g_application->DiscordError(errorCode, message);
-}
-
-void __discordReady(const DiscordUser *user)
-{
-	Logf("[Discord] Logged in as \"%s\"", Logger::Severity::Info, user->username);
-}
-
-void __discordJoinGame(const char *joins)
-{
-	g_application->JoinMultiFromInvite(joins);
-}
-
-void __discordSpecGame(const char *specs)
-{
-}
-
-void __discordJoinReq(const DiscordUser *duser)
-{
-}
-
-void __discordDisconnected(int errcode, const char *msg)
-{
-	g_application->DiscordError(errcode, msg);
 }
 
 void __updateChecker()
@@ -836,20 +811,6 @@ void Application::CheckForUpdate()
 			m_updateThread.join();
 		m_updateThread = Thread(__updateChecker);
 	}
-}
-
-void Application::m_InitDiscord()
-{
-	ProfilerScope $("Discord RPC Init");
-	DiscordEventHandlers dhe;
-	memset(&dhe, 0, sizeof(dhe));
-	dhe.errored = __discordError;
-	dhe.ready = __discordReady;
-	dhe.joinRequest = __discordJoinReq;
-	dhe.spectateGame = __discordSpecGame;
-	dhe.joinGame = __discordJoinGame;
-	dhe.disconnected = __discordDisconnected;
-	Discord_Initialize(DISCORD_APPLICATION_ID, &dhe, 1, nullptr);
 }
 
 void Application::m_InitLightPlugins()
@@ -1224,7 +1185,6 @@ bool Application::m_Init()
 	CheckForUpdate();
 
 
-	m_InitDiscord();
 	if (g_gameConfig.GetBool(GameConfigKeys::UseLightPlugins))
 	{
 		m_InitLightPlugins();
@@ -1277,8 +1237,6 @@ void Application::m_MainLoop()
 	{
 		m_appTime = appTimer.SecondsAsFloat();
 		m_frameTimer.Restart();
-		//run discord callbacks
-		Discord_RunCallbacks();
 
 		// Process changes in the list of items
 		bool restoreTop = false;
@@ -1618,8 +1576,6 @@ void Application::m_Cleanup()
 	g_guiState.currentFont.reset();
 
 	m_fonts.clear();
-
-	Discord_Shutdown();
 
 #ifdef EMBEDDED
 	nvgDeleteGLES2(g_guiState.vg);
@@ -1999,79 +1955,6 @@ void Application::DisposeLua(lua_State *state)
 	m_skinHttp.ClearState(state);
 	m_skinIR.ClearState(state);
 	lua_close(state);
-}
-
-void Application::DiscordError(int errorCode, const char *message)
-{
-	Logf("[Discord] %s", Logger::Severity::Warning, message);
-}
-
-void Application::DiscordPresenceMenu(String name)
-{
-	DiscordRichPresence discordPresence;
-	memset(&discordPresence, 0, sizeof(discordPresence));
-	discordPresence.state = "In Menus";
-	discordPresence.details = name.c_str();
-
-	discordPresence.joinSecret = *m_multiRoomSecret;
-	discordPresence.partySize = m_multiRoomCount;
-	discordPresence.partyMax = m_multiRoomSize;
-	discordPresence.partyId = *m_multiRoomId;
-
-	Discord_UpdatePresence(&discordPresence);
-}
-
-void Application::DiscordPresenceMulti(String secret, int partySize, int partyMax, String id)
-{
-	DiscordRichPresence discordPresence;
-	memset(&discordPresence, 0, sizeof(discordPresence));
-
-	m_multiRoomCount = partySize;
-	m_multiRoomSize = partyMax;
-	m_multiRoomSecret = secret;
-	m_multiRoomId = id;
-
-	discordPresence.state = "In Lobby";
-	discordPresence.details = "Waiting for multiplayer game to start.";
-
-	discordPresence.joinSecret = *m_multiRoomSecret;
-	discordPresence.partySize = m_multiRoomCount;
-	discordPresence.partyMax = m_multiRoomSize;
-	discordPresence.partyId = *m_multiRoomId;
-
-	Discord_UpdatePresence(&discordPresence);
-}
-
-void Application::DiscordPresenceSong(const BeatmapSettings &song, int64 startTime, int64 endTime)
-{
-	Vector<String> diffNames = {"NOV", "ADV", "EXH", "INF"};
-	DiscordRichPresence discordPresence;
-	memset(&discordPresence, 0, sizeof(discordPresence));
-	char bufferState[128] = {0};
-	sprintf(bufferState, "Playing [%s %d]", diffNames[song.difficulty].c_str(), song.level);
-	discordPresence.state = bufferState;
-	char bufferDetails[128] = {0};
-	int titleLength = snprintf(bufferDetails, 128, "%s - %s", *song.title, *song.artist);
-	if (titleLength >= 128 || titleLength < 0)
-	{
-		memset(bufferDetails, 0, 128);
-		titleLength = snprintf(bufferDetails, 128, "%s", *song.title);
-	}
-	if (titleLength >= 128 || titleLength < 0)
-	{
-		memset(bufferDetails, 0, 128);
-		strcpy(bufferDetails, "[title too long]");
-	}
-	discordPresence.details = bufferDetails;
-	discordPresence.startTimestamp = startTime;
-	discordPresence.endTimestamp = endTime;
-
-	discordPresence.joinSecret = *m_multiRoomSecret;
-	discordPresence.partySize = m_multiRoomCount;
-	discordPresence.partyMax = m_multiRoomSize;
-	discordPresence.partyId = *m_multiRoomId;
-
-	Discord_UpdatePresence(&discordPresence);
 }
 
 void Application::JoinMultiFromInvite(String secret)

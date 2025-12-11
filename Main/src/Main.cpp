@@ -21,7 +21,8 @@ int main(int argc, char** argv)
 	new Application();
 	g_application->SetCommandLine(argc, argv);
 	int32 ret = g_application->Run();
-	delete g_application;
-	return ret;
+	return 0;
+	// delete g_application;
+	// return ret;
 }
 #endif

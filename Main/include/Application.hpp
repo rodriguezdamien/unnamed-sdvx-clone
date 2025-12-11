@@ -188,6 +188,8 @@ private:
 	int m_responsiveInputsSleep = 1;
 
 	Thread m_renderThread;
+
+	Timer m_appTimer;
 };
 
 class JacketLoadingJob : public JobBase

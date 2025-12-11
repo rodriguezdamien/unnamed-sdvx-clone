@@ -15,6 +15,7 @@
 #include "SkinConfig.hpp"
 #include "ShadedMesh.hpp"
 #include "IR.hpp"
+#include <emscripten.h>
 
 #ifdef EMBEDDED
 #define NANOVG_GLES2_IMPLEMENTATION
@@ -1204,7 +1205,7 @@ bool Application::m_Init()
 	m_OnWindowResized(g_resolution);
 
 	m_showFps = g_gameConfig.GetBool(GameConfigKeys::ShowFps);
-	g_gameWindow->SetVSync(g_gameConfig.GetBool(GameConfigKeys::VSync) ? 1 : 0);
+	// g_gameWindow->SetVSync(g_gameConfig.GetBool(GameConfigKeys::VSync) ? 1 : 0);
 
 	{
 		ProfilerScope $("Load Transition Screens");
@@ -1231,12 +1232,11 @@ bool Application::m_Init()
 }
 void Application::m_MainLoop()
 {
-	Timer appTimer;
 	m_deltaTime = 0.5f;
-	while (true)
-	{
-		m_appTime = appTimer.SecondsAsFloat();
-		m_frameTimer.Restart();
+	emscripten_set_main_loop_arg([](void *arg) {
+		auto app = reinterpret_cast<Application*>(arg);
+		app->m_appTime = app->m_appTimer.SecondsAsFloat();
+		app->m_frameTimer.Restart();
 
 		// Process changes in the list of items
 		bool restoreTop = false;
@@ -1299,7 +1299,7 @@ void Application::m_MainLoop()
 
 		// Determine target tick rates for update and render
 		int32 targetFPS = 120; // Default to 120 FPS
-		m_targetRenderTime = 0;
+		app->m_targetRenderTime = 0;
 		for (auto tickable : g_tickables)
 		{
 			int32 tempTarget = 0;
@@ -1309,21 +1309,21 @@ void Application::m_MainLoop()
 			}
 		}
 		if (targetFPS > 0)
-			m_targetRenderTime = 1000000 / targetFPS;
+			app->m_targetRenderTime = 1000000 / targetFPS;
 
 		// Main loop
-		float currentTime = appTimer.SecondsAsFloat();
+		float currentTime = app->m_appTimer.SecondsAsFloat();
 
-		g_avgRenderDelta = g_avgRenderDelta * 0.98f + m_deltaTime * 0.02f; // Calculate avg
+		g_avgRenderDelta = g_avgRenderDelta * 0.98f + app->m_deltaTime * 0.02f; // Calculate avg
 
 		// Set time in render state
-		m_renderStateBase.time = currentTime;
+		app->m_renderStateBase.time = currentTime;
 
 		// Also update window in render loop
 		if (!g_gameWindow->Update())
 			return;
 
-		m_Tick();
+		app->m_Tick();
 
 		// Garbage collect resources
 		ResourceManagers::TickAll();
@@ -1334,8 +1334,8 @@ void Application::m_MainLoop()
 
 
 
-		m_deltaTime = m_frameTimer.SecondsAsFloat();
-	}
+		app->m_deltaTime = app->m_frameTimer.SecondsAsFloat();
+	}, this, 120, 0);
 }
 
 void Application::m_Tick()
@@ -1460,26 +1460,26 @@ void Application::RenderTickables()
 	CheckGLErrors("after processing render queues");
 
 	//This FPS limiter seems unstable over 500fps
-	uint32 frameTime = m_frameTimer.Microseconds();
-	if (frameTime < m_targetRenderTime)
-	{
-		uint32 timeLeft = (m_targetRenderTime - frameTime);
-		uint32 sleepMicroSecs = (uint32)(timeLeft * m_fpsTargetSleepMult * 0.75);
-		if (sleepMicroSecs > 1000)
-		{
-			uint32 sleepStart = m_frameTimer.Microseconds();
-			std::this_thread::sleep_for(std::chrono::microseconds(sleepMicroSecs));
-			float actualSleep = m_frameTimer.Microseconds() - sleepStart;
+	// uint32 frameTime = m_frameTimer.Microseconds();
+	// if (frameTime < m_targetRenderTime)
+	// {
+	// 	uint32 timeLeft = (m_targetRenderTime - frameTime);
+	// 	uint32 sleepMicroSecs = (uint32)(timeLeft * m_fpsTargetSleepMult * 0.75);
+	// 	if (sleepMicroSecs > 1000)
+	// 	{
+	// 		uint32 sleepStart = m_frameTimer.Microseconds();
+	// 		std::this_thread::sleep_for(std::chrono::microseconds(sleepMicroSecs));
+	// 		float actualSleep = m_frameTimer.Microseconds() - sleepStart;
 
-			m_fpsTargetSleepMult += ((float)timeLeft - (float)actualSleep / 0.75) / 500000.f;
-			m_fpsTargetSleepMult = Math::Clamp(m_fpsTargetSleepMult, 0.0f, 1.0f);
-		}
+	// 		m_fpsTargetSleepMult += ((float)timeLeft - (float)actualSleep / 0.75) / 500000.f;
+	// 		m_fpsTargetSleepMult = Math::Clamp(m_fpsTargetSleepMult, 0.0f, 1.0f);
+	// 	}
 
-		do
-		{
-			std::this_thread::yield();
-		} while (m_frameTimer.Microseconds() < m_targetRenderTime);
-	}
+	// 	do
+	// 	{
+	// 		std::this_thread::yield();
+	// 	} while (m_frameTimer.Microseconds() < m_targetRenderTime);
+	// }
 
 	CheckGLErrors("just before buffer swapping");
 

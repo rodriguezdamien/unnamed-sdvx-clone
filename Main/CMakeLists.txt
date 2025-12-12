@@ -150,5 +150,6 @@ target_link_options(usc-game PUBLIC -sUSE_PTHREADS=1)
 target_link_options(usc-game PUBLIC -sEXPORTED_RUNTIME_METHODS=['wasmMemory'])
 target_link_options(usc-game PUBLIC -sABORT_ON_WASM_EXCEPTIONS=1)
 target_link_options(usc-game PUBLIC -sALLOW_MEMORY_GROWTH)
+target_link_options(usc-game PUBLIC -sSTACK_SIZE=8388608)
 
 target_link_options(usc-game PUBLIC --preload-file /src/bin/@/data)

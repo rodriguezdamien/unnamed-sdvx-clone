@@ -115,7 +115,7 @@ String Path::Normalize(const String& path)
     char *ret = realpath(*path, out);
     if (ret == 0) {
         printf("Path::Normalize(path=%s): FAILURE\n", path.c_str());
-        return "";
+        return path;
     }
 
 	for(uint32 i = 0; i < MAX_PATH; i++)

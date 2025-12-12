@@ -1,4 +1,7 @@
 build/
+bin/*.wasm
+bin/*.js
+bin/*.data
 
 # macOS system files
 .DS_Store

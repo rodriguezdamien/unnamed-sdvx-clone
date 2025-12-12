@@ -45,11 +45,9 @@ bool File::OpenRead(const String& path)
 	{
 		char buffer[1024];
 		int n = emscripten_get_callstack(EM_LOG_C_STACK | EM_LOG_DEMANGLE, buffer, sizeof(buffer));
-		printf("Stack (%d bytes):\n%s\n", n, buffer);
 	}
 
 
-	printf("OpenRead(path=%s) called\n", path.c_str());
 	Close();
 
 	int handle = open(*path, O_RDONLY);

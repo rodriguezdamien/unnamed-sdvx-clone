@@ -523,10 +523,8 @@ bool Application::m_LoadConfig(String profileName /* must be by value */)
 	bool successful = false;
 
 	String configPath = "Main.cfg";
-	printf("configPath=%s\n", configPath.c_str());
 	File mainConfigFile;
 	String tmp = Path::Absolute(configPath);
-	printf("tmp=%s\n", tmp.c_str());
 	if (mainConfigFile.OpenRead(tmp))
 	{
 		FileReader reader(mainConfigFile);

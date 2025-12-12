@@ -55,7 +55,7 @@ local recordCache = {}
 
 gfx.LoadSkinFont("NotoSans-Regular.ttf");
 
-game.LoadSkinSample("menu_click")
+game.LoadSkinSample("menu_click.wav")
 game.LoadSkinSample("click-02")
 game.LoadSkinSample("woosh")
 

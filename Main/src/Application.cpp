@@ -1235,7 +1235,7 @@ void Application::m_MainLoop()
 		auto app = reinterpret_cast<Application*>(arg);
 		app->m_appTime = app->m_appTimer.SecondsAsFloat();
 		app->m_frameTimer.Restart();
-
+		printf("coucou\n");
 		// Process changes in the list of items
 		bool restoreTop = false;
 
@@ -1333,7 +1333,7 @@ void Application::m_MainLoop()
 
 
 		app->m_deltaTime = app->m_frameTimer.SecondsAsFloat();
-	}, this, 120, 0);
+	}, this, 0, 1);
 }
 
 void Application::m_Tick()

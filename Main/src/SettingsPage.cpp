@@ -519,6 +519,7 @@ void SettingsPageCollection::Exit()
 	g_input.Init(*g_gameWindow);
 
 	g_application->RemoveTickable(this);
+	
 }
 
 void SettingsPageCollection::Reload()
